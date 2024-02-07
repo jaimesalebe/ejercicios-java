@@ -1,5 +1,7 @@
 package com.jaimesalebe.trivia;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,58 +11,56 @@ import java.net.URL;
 
 public class ChatGptClient {
 
-    public String generarPregunta(String pregunta) {
-
+    public String generarPregunta(String categoria) {
+        Dotenv dotenv = Dotenv.load();
+        String respuestaDeChatGpt = "";
         try {
-            String apiKey = "TU_API_KEY_AQUI";
-            String prompt = "Hola, ¿cómo estás?";
-            String apiUrl = "https://api.openai.com/v1/chat/completions";
+            // URL de la API de ChatGPT
+            URL url = new URL("https://api.openai.com/v1/chat/completions");
 
-            URL url = new URL(apiUrl);
+            // Establecer la conexión HTTP
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // Configuración de la conexión
             connection.setRequestMethod("POST");
+
+            // Establecer los encabezados de la solicitud
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+            connection.setRequestProperty("Authorization", "Bearer " + dotenv.get("API_KEY_GPT"));
+
             connection.setDoOutput(true);
+            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
 
-            // Creación del cuerpo de la solicitud
-            String requestBody = "{\"messages\": [{\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}, {\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
+            // Crear el cuerpo de la solicitud
+            String requestBody =
+                        "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"Dame una pregunta para un juego de trivia con la categoria " + categoria + " que contenga la siguiente estrucuta en json (colocale las comillas y cada llave y respuesta como si de un json se tratara). category: aqui va la categoria, question: aqui va la pregunta, answer: la respuesta es el numero de la posicion de options partiendo desde 0, explanation:aqui va una explicacion de porque es la respuesta correcta de manera resumida y precisa, options: [option1, option2, option3] \"}, {\"role\": \"user\", \"content\": \"response in spanish\"}]}";
 
-            // Envío de la solicitud
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.writeBytes(requestBody);
-                wr.flush();
+            // Enviar la solicitud
+            outputStream.writeBytes(requestBody);
+            outputStream.flush();
+            outputStream.close();
+
+            // Obtener la respuesta
+            int responseCode = connection.getResponseCode();
+            BufferedReader inputReader;
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                inputReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            } else {
+                inputReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             }
 
-            // Obtención de la respuesta
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-
-                // Imprimir la respuesta
-                System.out.println(response.toString());
+            // Leer la respuesta línea por línea
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = inputReader.readLine()) != null) {
+                response.append(inputLine);
             }
-
-        } catch (IOException e) {
+            inputReader.close();
+            // Imprimir la respuesta
+            System.out.println(response.toString());
+            respuestaDeChatGpt = response.toString();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return "{\n" +
-                "\"category\": \"Cultura\",\n" +
-                "\"options\": [\n" +
-                "\"Ballet\",\n" +
-                "\"Ópera\",\n" +
-                "\"Teatro\"\n" +
-                "],\n" +
-                "\"answer\": \"2\",\n" +
-                "\"explanation\": \"La ópera es un género musical que combina música y drama, caracterizado por el canto de los personajes principales.\",\n" +
-                "\"question\": \"¿En qué tipo de presentación musical los personajes principales expresan sus emociones a través del canto?\"\n" +
-                "}";
+        return respuestaDeChatGpt;
     }
 }
