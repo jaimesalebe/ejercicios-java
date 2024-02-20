@@ -1,18 +1,35 @@
 package com.jaimesalebe.tutorial;
 
 import com.jaimesalebe.tutorial.models.Book;
+import com.jaimesalebe.tutorial.models.MyBean;
+import com.jaimesalebe.tutorial.models.Product;
 import com.jaimesalebe.tutorial.models.User;
+import com.jaimesalebe.tutorial.myBeans.MyComponent;
+import com.jaimesalebe.tutorial.services.IOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @RestController
 public class Rutas {
+
+    private IOrderService orderService;
+    private MyBean myBean;
+
+    @Autowired //Siempre que se pueda es más recomendable usar la inyección desde el constructor
+    private MyComponent myComponent;
+
+    public Rutas(IOrderService orderService, MyBean myBean) {
+        this.orderService = orderService;
+        this.myBean = myBean;
+    }
 
     private static Logger logger = LoggerFactory.getLogger(TutorialApplication.class);
 
@@ -76,6 +93,14 @@ public class Rutas {
     @GetMapping("/userData/v3")
     public User getUserDataV3() {
         return new User("Jaime", 24, "malecon 123");
+    }
+
+    @PostMapping("/order")
+    public String createOrder(@RequestBody List<Product> products) {
+        orderService.saveOrder(products);
+        myBean.greatting();
+        myComponent.saludarDesdeComponente();
+        return "Products saved";
     }
 
 }
