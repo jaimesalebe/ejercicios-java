@@ -1,4 +1,4 @@
-package com.jaimesalebe.trivia.entities;
+x|package com.jaimesalebe.trivia.entities;
 
 public class Pregunta {
     private String category;
