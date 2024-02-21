@@ -9,4 +9,4 @@ create table books (
   CONSTRAINT books_name_uniq UNIQUE (name)
 );
 
-insert into books (name) values ('Atomic habits'), ('The Bible'), ('Breath ');
+insert into books (name) values ('Atomic habits'), ('The Bible'), ('Breath');

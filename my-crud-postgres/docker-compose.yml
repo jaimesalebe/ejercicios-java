@@ -1,18 +1,26 @@
-version: '3.8'
+version: '3.9'
+
 services:
-  db:
-    image: postgres:15.2-alpine3.17
+
+  postgres:
+    image: postgres:14.11-alpine3.18
     restart: always
-    environment:
-      - POSTGRES_USER=jaime
-      - POSTGRES_PASSWORD=12345
     ports:
-      - '5432:5432'
+      - "5432:5432"
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=root
     volumes:
       - ./src/test/resources/db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
-  adminer:
-    image: adminer
-    restart: always
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
     ports:
-      - 8081:8080
+      - "80:80"
+    depends_on:
+      - postgres

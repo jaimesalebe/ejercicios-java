@@ -7,8 +7,8 @@ datasource:
     query-timeout: 20
   my-connection:
     jdbc-url: jdbc:postgresql://localhost:5432/books_system
-    username: jaime
-    password: 12345
+    username: root
+    password: root
     maximum-pool-size: 10
     pool-name: "crud-pool"
     auto-commit: true
