@@ -19,4 +19,7 @@ public class BookService {
         return repository.getAllBooks();
     }
 
+    public void createBook(Book newBook) {
+        repository.createBook(newBook);
+    }
 }

@@ -24,6 +24,7 @@ public class BookController {
 
     @PostMapping("/book")
     public String createBook(@RequestBody Book newBook){
+        bookService.createBook(newBook);
         return "Created";
     }
 }
