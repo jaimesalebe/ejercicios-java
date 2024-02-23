@@ -1,0 +1,20 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb-container
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: jaime
+      MARIADB_USER: jaime
+      MARIADB_PASSWORD: admin
+    volumes:
+      - ./src/test/resources/db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    ports:
+      - "3306:3306"
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer-container
+    ports:
+      - "80:8080"
