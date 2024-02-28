@@ -5,7 +5,9 @@ import com.jaimesalebe.crudmysql.Repository.BookRepository;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +24,7 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
-    public void createUpdateBook(Book book) {
+    public void createBook(Book book) {
         bookRepository.save(book);
     }
 
@@ -42,6 +44,4 @@ public class BookService {
             throw new ResourceNotFoundException("Book not found with id " + id);
         }
     }
-
-
 }
