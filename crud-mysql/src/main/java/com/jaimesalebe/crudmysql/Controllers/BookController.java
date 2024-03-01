@@ -50,8 +50,18 @@ public class BookController {
         return bookService.getAllBooks();
     }
 
-    @PatchMapping("/{id}")
-    public Optional<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
+    @PutMapping("/{id}")
+    public Optional<Book> updateBook(@PathVariable Long id,
+                                     @RequestParam("file") MultipartFile file,
+                                     @RequestParam("title") String title,
+                                     @RequestParam("author") String author) {
+        String imageUrl = storeService.saveImage(file);
+
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setImageUrl(imageUrl);
+
         bookService.updateBook(id, book);
         return bookService.getOneBook(id);
     }

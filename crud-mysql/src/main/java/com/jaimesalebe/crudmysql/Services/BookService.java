@@ -39,6 +39,7 @@ public class BookService {
             Book book = optionalBook.get();
             book.setTitle(bookDetails.getTitle());
             book.setAuthor(bookDetails.getAuthor());
+            book.setImageUrl(bookDetails.getImageUrl());
             return bookRepository.save(book);
         } else {
             throw new ResourceNotFoundException("Book not found with id " + id);
